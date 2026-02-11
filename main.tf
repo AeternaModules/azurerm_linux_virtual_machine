@@ -121,8 +121,11 @@ resource "azurerm_linux_virtual_machine" "linux_virtual_machines" {
   dynamic "secret" {
     for_each = each.value.secret != null ? [each.value.secret] : []
     content {
-      certificate {
-        url = secret.value.certificate.url
+      dynamic "certificate" {
+        for_each = secret.value.certificate
+        content {
+          url = certificate.value.url
+        }
       }
       key_vault_id = secret.value.key_vault_id
     }
