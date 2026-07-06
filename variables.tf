@@ -210,5 +210,181 @@ EOT
     ])
     error_message = "Each certificate list must contain at least 1 items"
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        length(v.size) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.edge_zone == null || (length(v.edge_zone) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.license_type == null || (contains(["RHEL_BYOS", "RHEL_BASE", "RHEL_EUS", "RHEL_SAPAPPS", "RHEL_SAPHA", "RHEL_BASESAPAPPS", "RHEL_BASESAPHA", "SLES_BYOS", "SLES_SAP", "SLES_HPC", "UBUNTU_PRO"], v.license_type))
+      )
+    ])
+    error_message = "must be one of: RHEL_BYOS, RHEL_BASE, RHEL_EUS, RHEL_SAPAPPS, RHEL_SAPHA, RHEL_BASESAPAPPS, RHEL_BASESAPHA, SLES_BYOS, SLES_SAP, SLES_HPC, UBUNTU_PRO"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.platform_fault_domain == null || (v.platform_fault_domain >= -1)
+      )
+    ])
+    error_message = "must be at least -1"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.zone == null || (length(v.zone) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # --- Unconfirmed validation candidates, derived from azurerm_linux_virtual_machine's provider source ---
+  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
+  # or a path that crosses a list-typed block (needs its own for_each wrapping).
+  # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: name
+  #   source:    [from computeValidate.VirtualMachineName] !ok
+  # path: name
+  #   condition: length(value) > 0
+  #   message:   [from computeValidate.VirtualMachineName: invalid when value == ""]
+  #   source:    [from computeValidate.VirtualMachineName: invalid when value == ""]
+  # path: name
+  #   source:    [from computeValidate.VirtualMachineName] len(v) > maxLength
+  # path: name
+  #   source:    [from computeValidate.VirtualMachineName] !matched
+  # path: name
+  #   source:    [from computeValidate.VirtualMachineName] !matched
+  # path: name
+  #   source:    [from computeValidate.VirtualMachineName] !matched
+  # path: name
+  #   source:    [from computeValidate.VirtualMachineName] matched
+  # path: resource_group_name
+  #   condition: length(value) <= 90
+  #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
+  #   source:    [from resourcegroups.ValidateName: invalid when len(value) > 90]
+  # path: resource_group_name
+  #   condition: !endswith(value, ".")
+  #   message:   [from resourcegroups.ValidateName: must not end with "."]
+  #   source:    [from resourcegroups.ValidateName: must not end with "."]
+  # path: resource_group_name
+  #   condition: length(value) != 0
+  #   message:   [from resourcegroups.ValidateName: invalid when len(value) == 0]
+  #   source:    [from resourcegroups.ValidateName: invalid when len(value) == 0]
+  # path: resource_group_name
+  #   source:    [from resourcegroups.ValidateName] !matched
+  # path: location
+  #   source:    location.EnhancedValidate: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
+  # path: admin_username
+  #   source:    [from computeValidate.LinuxAdminUsername] !ok
+  # path: admin_username
+  #   condition: length(value) > 0
+  #   message:   [from computeValidate.LinuxAdminUsername: invalid when value == ""]
+  #   source:    [from computeValidate.LinuxAdminUsername: invalid when value == ""]
+  # path: admin_username
+  #   condition: length(value) <= 64
+  #   message:   [from computeValidate.LinuxAdminUsername: invalid when len(value) > 64]
+  #   source:    [from computeValidate.LinuxAdminUsername: invalid when len(value) > 64]
+  # path: admin_username
+  #   source:    [from computeValidate.LinuxAdminUsername] value == v
+  # path: network_interface_ids[*]
+  #   source:    [from commonids.ValidateNetworkInterfaceID] !ok
+  # path: network_interface_ids[*]
+  #   source:    [from commonids.ValidateNetworkInterfaceID] err != nil
+  # path: os_managed_disk_id
+  #   source:    [from commonids.ValidateManagedDiskID] !ok
+  # path: os_managed_disk_id
+  #   source:    [from commonids.ValidateManagedDiskID] err != nil
+  # path: admin_password
+  #   source:    [from computeValidate.LinuxAdminPassword] !ok
+  # path: admin_password
+  #   condition: length(value) > 0
+  #   message:   [from computeValidate.LinuxAdminPassword: invalid when value == ""]
+  #   source:    [from computeValidate.LinuxAdminPassword: invalid when value == ""]
+  # path: admin_password
+  #   source:    [from computeValidate.LinuxAdminPassword] len(v) < 6 || len(v) > 72
+  # path: admin_password
+  #   source:    [from computeValidate.LinuxAdminPassword] value == v
+  # path: admin_password
+  #   source:    [from computeValidate.LinuxAdminPassword] conditions < 3
+  # path: availability_set_id
+  #   source:    [from commonids.ValidateAvailabilitySetID] !ok
+  # path: availability_set_id
+  #   source:    [from commonids.ValidateAvailabilitySetID] err != nil
+  # path: capacity_reservation_group_id
+  #   source:    [from capacityreservationgroups.ValidateCapacityReservationGroupID] !ok
+  # path: capacity_reservation_group_id
+  #   source:    [from capacityreservationgroups.ValidateCapacityReservationGroupID] err != nil
+  # path: computer_name
+  #   source:    computeValidate.LinuxComputerNameFull: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
+  # path: custom_data
+  #   source:    validation.StringIsBase64(...) - no translation rule yet, add one
+  # path: dedicated_host_id
+  #   source:    [from commonids.ValidateDedicatedHostID] !ok
+  # path: dedicated_host_id
+  #   source:    [from commonids.ValidateDedicatedHostID] err != nil
+  # path: dedicated_host_group_id
+  #   source:    [from commonids.ValidateDedicatedHostGroupID] !ok
+  # path: dedicated_host_group_id
+  #   source:    [from commonids.ValidateDedicatedHostGroupID] err != nil
+  # path: disk_controller_type
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: eviction_policy
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: extensions_time_budget
+  #   source:    azValidate.ISO8601DurationBetween: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
+  # path: identity.type
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: identity.identity_ids[*]
+  #   source:    [from commonids.ValidateUserAssignedIdentityID] !ok
+  # path: identity.identity_ids[*]
+  #   source:    [from commonids.ValidateUserAssignedIdentityID] err != nil
+  # path: max_bid_price
+  #   source:    validation.FloatAtLeast(...) - no translation rule yet, add one
+  # path: priority
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: patch_mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: patch_assessment_mode
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: proximity_placement_group_id
+  #   source:    [from proximityplacementgroups.ValidateProximityPlacementGroupID] !ok
+  # path: proximity_placement_group_id
+  #   source:    [from proximityplacementgroups.ValidateProximityPlacementGroupID] err != nil
+  # path: reboot_setting
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: source_image_id
+  #   source:    validation.Any(...) - no translation rule yet, add one
+  # path: virtual_machine_scale_set_id
+  #   source:    [from commonids.ValidateVirtualMachineScaleSetID] !ok
+  # path: virtual_machine_scale_set_id
+  #   source:    [from commonids.ValidateVirtualMachineScaleSetID] err != nil
+  # path: tags
+  #   condition: length(value) <= 50
+  #   message:   [from tags.Validate: invalid when len(value) > 50]
+  #   source:    [from tags.Validate: invalid when len(value) > 50]
+  # path: tags
+  #   condition: length(value) <= 512
+  #   message:   [from tags.Validate: invalid when len(value) > 512]
+  #   source:    [from tags.Validate: invalid when len(value) > 512]
+  # path: tags
+  #   source:    [from tags.Validate] err != nil
+  # path: tags
+  #   condition: length(value) <= 256
+  #   message:   [from tags.Validate: invalid when len(value) > 256]
+  #   source:    [from tags.Validate: invalid when len(value) > 256]
+  # path: user_data
+  #   source:    validation.StringIsBase64(...) - no translation rule yet, add one
 }
 
