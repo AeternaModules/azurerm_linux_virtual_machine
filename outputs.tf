@@ -1,3 +1,7 @@
+output "linux_virtual_machines_id" {
+  description = "Map of id values across all linux_virtual_machines, keyed the same as var.linux_virtual_machines"
+  value       = { for k, v in azurerm_linux_virtual_machine.linux_virtual_machines : k => v.id }
+}
 output "linux_virtual_machines_additional_capabilities" {
   description = "Map of additional_capabilities values across all linux_virtual_machines, keyed the same as var.linux_virtual_machines"
   value       = { for k, v in azurerm_linux_virtual_machine.linux_virtual_machines : k => v.additional_capabilities }
