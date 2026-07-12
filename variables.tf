@@ -150,10 +150,10 @@ EOT
       hibernation_enabled = optional(bool) # Default: false
       ultra_ssd_enabled   = optional(bool) # Default: false
     }))
-    admin_ssh_key = optional(object({
+    admin_ssh_key = optional(list(object({
       public_key = string
       username   = string
-    }))
+    })))
     boot_diagnostics = optional(object({
       storage_account_uri = optional(string)
     }))
@@ -177,12 +177,12 @@ EOT
       product   = string
       publisher = string
     }))
-    secret = optional(object({
+    secret = optional(list(object({
       certificate = list(object({
         url = string
       }))
       key_vault_id = string
-    }))
+    })))
     source_image_reference = optional(object({
       offer     = string
       publisher = string
@@ -205,50 +205,10 @@ EOT
   validation {
     condition = alltrue([
       for k, v in var.linux_virtual_machines : (
-        length(v.secret.certificate) >= 1
+        v.secret == null || alltrue([for item in v.secret : (length(item.certificate) >= 1)])
       )
     ])
     error_message = "Each certificate list must contain at least 1 items"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.linux_virtual_machines : (
-        length(v.size) > 0
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.linux_virtual_machines : (
-        v.edge_zone == null || (length(v.edge_zone) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.linux_virtual_machines : (
-        v.license_type == null || (contains(["RHEL_BYOS", "RHEL_BASE", "RHEL_EUS", "RHEL_SAPAPPS", "RHEL_SAPHA", "RHEL_BASESAPAPPS", "RHEL_BASESAPHA", "SLES_BYOS", "SLES_SAP", "SLES_HPC", "UBUNTU_PRO"], v.license_type))
-      )
-    ])
-    error_message = "must be one of: RHEL_BYOS, RHEL_BASE, RHEL_EUS, RHEL_SAPAPPS, RHEL_SAPHA, RHEL_BASESAPAPPS, RHEL_BASESAPHA, SLES_BYOS, SLES_SAP, SLES_HPC, UBUNTU_PRO"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.linux_virtual_machines : (
-        v.platform_fault_domain == null || (v.platform_fault_domain >= -1)
-      )
-    ])
-    error_message = "must be at least -1"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.linux_virtual_machines : (
-        v.zone == null || (length(v.zone) > 0)
-      )
-    ])
-    error_message = "must not be empty"
   }
   # --- Unconfirmed validation candidates, derived from azurerm_linux_virtual_machine's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
@@ -306,6 +266,9 @@ EOT
   #   source:    [from commonids.ValidateManagedDiskID] !ok
   # path: os_managed_disk_id
   #   source:    [from commonids.ValidateManagedDiskID] err != nil
+  # path: size
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: admin_password
   #   source:    [from computeValidate.LinuxAdminPassword] !ok
   # path: admin_password
@@ -340,6 +303,9 @@ EOT
   #   source:    [from commonids.ValidateDedicatedHostGroupID] err != nil
   # path: disk_controller_type
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: edge_zone
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: eviction_policy
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
   # path: extensions_time_budget
@@ -350,6 +316,9 @@ EOT
   #   source:    [from commonids.ValidateUserAssignedIdentityID] !ok
   # path: identity.identity_ids[*]
   #   source:    [from commonids.ValidateUserAssignedIdentityID] err != nil
+  # path: license_type
+  #   condition: contains(["RHEL_BYOS", "RHEL_BASE", "RHEL_EUS", "RHEL_SAPAPPS", "RHEL_SAPHA", "RHEL_BASESAPAPPS", "RHEL_BASESAPHA", "SLES_BYOS", "SLES_SAP", "SLES_HPC", "UBUNTU_PRO"], value)
+  #   message:   must be one of: RHEL_BYOS, RHEL_BASE, RHEL_EUS, RHEL_SAPAPPS, RHEL_SAPHA, RHEL_BASESAPAPPS, RHEL_BASESAPHA, SLES_BYOS, SLES_SAP, SLES_HPC, UBUNTU_PRO
   # path: max_bid_price
   #   source:    validation.FloatAtLeast(...) - no translation rule yet, add one
   # path: priority
@@ -370,6 +339,9 @@ EOT
   #   source:    [from commonids.ValidateVirtualMachineScaleSetID] !ok
   # path: virtual_machine_scale_set_id
   #   source:    [from commonids.ValidateVirtualMachineScaleSetID] err != nil
+  # path: platform_fault_domain
+  #   condition: value >= -1
+  #   message:   must be at least -1
   # path: tags
   #   condition: length(value) <= 50
   #   message:   [from tags.Validate: invalid when len(value) > 50]
@@ -386,5 +358,8 @@ EOT
   #   source:    [from tags.Validate: invalid when len(value) > 256]
   # path: user_data
   #   source:    validation.StringIsBase64(...) - no translation rule yet, add one
+  # path: zone
+  #   condition: length(value) > 0
+  #   message:   must not be empty
 }
 

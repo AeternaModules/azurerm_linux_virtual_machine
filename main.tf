@@ -68,7 +68,7 @@ resource "azurerm_linux_virtual_machine" "linux_virtual_machines" {
   }
 
   dynamic "admin_ssh_key" {
-    for_each = each.value.admin_ssh_key != null ? [each.value.admin_ssh_key] : []
+    for_each = each.value.admin_ssh_key != null ? each.value.admin_ssh_key : []
     content {
       public_key = admin_ssh_key.value.public_key
       username   = admin_ssh_key.value.username
@@ -119,7 +119,7 @@ resource "azurerm_linux_virtual_machine" "linux_virtual_machines" {
   }
 
   dynamic "secret" {
-    for_each = each.value.secret != null ? [each.value.secret] : []
+    for_each = each.value.secret != null ? each.value.secret : []
     content {
       dynamic "certificate" {
         for_each = secret.value.certificate
