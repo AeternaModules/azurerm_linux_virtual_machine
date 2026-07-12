@@ -1,3 +1,13 @@
+data "azurerm_key_vault_secret" "admin_password" {
+  for_each     = { for k, v in var.linux_virtual_machines : k => v if v.admin_password_key_vault_id != null && v.admin_password_key_vault_secret_name != null }
+  name         = each.value.admin_password_key_vault_secret_name
+  key_vault_id = each.value.admin_password_key_vault_id
+}
+data "azurerm_key_vault_secret" "custom_data" {
+  for_each     = { for k, v in var.linux_virtual_machines : k => v if v.custom_data_key_vault_id != null && v.custom_data_key_vault_secret_name != null }
+  name         = each.value.custom_data_key_vault_secret_name
+  key_vault_id = each.value.custom_data_key_vault_id
+}
 resource "azurerm_linux_virtual_machine" "linux_virtual_machines" {
   for_each = var.linux_virtual_machines
 
@@ -24,7 +34,7 @@ resource "azurerm_linux_virtual_machine" "linux_virtual_machines" {
   license_type                                           = each.value.license_type
   eviction_policy                                        = each.value.eviction_policy
   vtpm_enabled                                           = each.value.vtpm_enabled
-  admin_password                                         = each.value.admin_password
+  admin_password                                         = each.value.admin_password != null ? each.value.admin_password : try(data.azurerm_key_vault_secret.admin_password[each.key].value, null)
   admin_username                                         = each.value.admin_username
   allow_extension_operations                             = each.value.allow_extension_operations
   availability_set_id                                    = each.value.availability_set_id
@@ -38,7 +48,7 @@ resource "azurerm_linux_virtual_machine" "linux_virtual_machines" {
   disk_controller_type                                   = each.value.disk_controller_type
   edge_zone                                              = each.value.edge_zone
   encryption_at_host_enabled                             = each.value.encryption_at_host_enabled
-  custom_data                                            = each.value.custom_data
+  custom_data                                            = each.value.custom_data != null ? each.value.custom_data : try(data.azurerm_key_vault_secret.custom_data[each.key].value, null)
   zone                                                   = each.value.zone
 
   os_disk {

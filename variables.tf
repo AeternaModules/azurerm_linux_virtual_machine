@@ -21,6 +21,8 @@ Required:
         - write_accelerator_enabled (optional)
 Optional:
     - admin_password
+    - admin_password_key_vault_id (alternative to admin_password - read from Key Vault instead)
+    - admin_password_key_vault_secret_name (alternative to admin_password - read from Key Vault instead)
     - admin_username
     - allow_extension_operations
     - availability_set_id
@@ -28,6 +30,8 @@ Optional:
     - capacity_reservation_group_id
     - computer_name
     - custom_data
+    - custom_data_key_vault_id (alternative to custom_data - read from Key Vault instead)
+    - custom_data_key_vault_secret_name (alternative to custom_data - read from Key Vault instead)
     - dedicated_host_group_id
     - dedicated_host_id
     - disable_password_authentication
@@ -117,6 +121,8 @@ EOT
     eviction_policy                                        = optional(string)
     vtpm_enabled                                           = optional(bool)
     admin_password                                         = optional(string)
+    admin_password_key_vault_id                            = optional(string)
+    admin_password_key_vault_secret_name                   = optional(string)
     admin_username                                         = optional(string)
     allow_extension_operations                             = optional(bool)
     availability_set_id                                    = optional(string)
@@ -131,6 +137,8 @@ EOT
     edge_zone                                              = optional(string)
     encryption_at_host_enabled                             = optional(bool)
     custom_data                                            = optional(string)
+    custom_data_key_vault_id                               = optional(string)
+    custom_data_key_vault_secret_name                      = optional(string)
     zone                                                   = optional(string)
     os_disk = object({
       caching = string
