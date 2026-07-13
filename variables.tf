@@ -218,210 +218,174 @@ EOT
     ])
     error_message = "Each certificate list must contain at least 1 items"
   }
-  # --- Unconfirmed validation candidates, derived from azurerm_linux_virtual_machine's provider source ---
-  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
-  # or a path that crosses a list-typed block (needs its own for_each wrapping).
-  # Review, translate into a real validation{} block above, and delete once confirmed.
-  # path: name
-  #   source:    [from computeValidate.VirtualMachineName] !ok
-  # path: name
-  #   condition: length(value) > 0
-  #   message:   [from computeValidate.VirtualMachineName: invalid when value == ""]
-  #   source:    [from computeValidate.VirtualMachineName: invalid when value == ""]
-  # path: name
-  #   source:    [from computeValidate.VirtualMachineName] len(v) > maxLength
-  # path: name
-  #   source:    [from computeValidate.VirtualMachineName] !matched
-  # path: name
-  #   source:    [from computeValidate.VirtualMachineName] !matched
-  # path: name
-  #   source:    [from computeValidate.VirtualMachineName] !matched
-  # path: name
-  #   source:    [from computeValidate.VirtualMachineName] matched
-  # path: resource_group_name
-  #   condition: length(value) <= 90
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  # path: resource_group_name
-  #   condition: !endswith(value, ".")
-  #   message:   [from resourcegroups.ValidateName: must not end with "."]
-  #   source:    [from resourcegroups.ValidateName: must not end with "."]
-  # path: resource_group_name
-  #   condition: length(value) != 0
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  # path: resource_group_name
-  #   source:    [from resourcegroups.ValidateName] !matched
-  # path: location
-  #   source:    location.EnhancedValidate: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: admin_username
-  #   source:    [from computeValidate.LinuxAdminUsername] !ok
-  # path: admin_username
-  #   condition: length(value) > 0
-  #   message:   [from computeValidate.LinuxAdminUsername: invalid when value == ""]
-  #   source:    [from computeValidate.LinuxAdminUsername: invalid when value == ""]
-  # path: admin_username
-  #   condition: length(value) <= 64
-  #   message:   [from computeValidate.LinuxAdminUsername: invalid when len(value) > 64]
-  #   source:    [from computeValidate.LinuxAdminUsername: invalid when len(value) > 64]
-  # path: admin_username
-  #   source:    [from computeValidate.LinuxAdminUsername] value == v
-  # path: network_interface_ids[*]
-  #   source:    [from commonids.ValidateNetworkInterfaceID] !ok
-  # path: network_interface_ids[*]
-  #   source:    [from commonids.ValidateNetworkInterfaceID] err != nil
-  # path: os_disk.caching
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: os_disk.storage_account_type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: os_disk.diff_disk_settings.option
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: os_disk.diff_disk_settings.placement
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: os_disk.disk_encryption_set_id
-  #   source:    [from validate.DiskEncryptionSetID] !ok
-  # path: os_disk.disk_encryption_set_id
-  #   source:    [from validate.DiskEncryptionSetID] err != nil
-  # path: os_disk.disk_size_gb
-  #   condition: value >= 0 && value <= 4095
-  #   message:   must be between 0 and 4095
-  # path: os_disk.secure_vm_disk_encryption_set_id
-  #   source:    [from validate.DiskEncryptionSetID] !ok
-  # path: os_disk.secure_vm_disk_encryption_set_id
-  #   source:    [from validate.DiskEncryptionSetID] err != nil
-  # path: os_disk.security_encryption_type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: os_managed_disk_id
-  #   source:    [from commonids.ValidateManagedDiskID] !ok
-  # path: os_managed_disk_id
-  #   source:    [from commonids.ValidateManagedDiskID] err != nil
-  # path: size
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: admin_password
-  #   source:    [from computeValidate.LinuxAdminPassword] !ok
-  # path: admin_password
-  #   condition: length(value) > 0
-  #   message:   [from computeValidate.LinuxAdminPassword: invalid when value == ""]
-  #   source:    [from computeValidate.LinuxAdminPassword: invalid when value == ""]
-  # path: admin_password
-  #   source:    [from computeValidate.LinuxAdminPassword] len(v) < 6 || len(v) > 72
-  # path: admin_password
-  #   source:    [from computeValidate.LinuxAdminPassword] value == v
-  # path: admin_password
-  #   source:    [from computeValidate.LinuxAdminPassword] conditions < 3
-  # path: admin_ssh_key.public_key
-  #   source:    validate.SSHKey: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: admin_ssh_key.username
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: availability_set_id
-  #   source:    [from commonids.ValidateAvailabilitySetID] !ok
-  # path: availability_set_id
-  #   source:    [from commonids.ValidateAvailabilitySetID] err != nil
-  # path: capacity_reservation_group_id
-  #   source:    [from capacityreservationgroups.ValidateCapacityReservationGroupID] !ok
-  # path: capacity_reservation_group_id
-  #   source:    [from capacityreservationgroups.ValidateCapacityReservationGroupID] err != nil
-  # path: computer_name
-  #   source:    computeValidate.LinuxComputerNameFull: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: custom_data
-  #   source:    validation.StringIsBase64(...) - no translation rule yet, add one
-  # path: dedicated_host_id
-  #   source:    [from commonids.ValidateDedicatedHostID] !ok
-  # path: dedicated_host_id
-  #   source:    [from commonids.ValidateDedicatedHostID] err != nil
-  # path: dedicated_host_group_id
-  #   source:    [from commonids.ValidateDedicatedHostGroupID] !ok
-  # path: dedicated_host_group_id
-  #   source:    [from commonids.ValidateDedicatedHostGroupID] err != nil
-  # path: disk_controller_type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: edge_zone
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: eviction_policy
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: extensions_time_budget
-  #   source:    azValidate.ISO8601DurationBetween: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: gallery_application.version_id
-  #   source:    [from galleryapplicationversions.ValidateApplicationVersionID] !ok
-  # path: gallery_application.version_id
-  #   source:    [from galleryapplicationversions.ValidateApplicationVersionID] err != nil
-  # path: gallery_application.configuration_blob_uri
-  #   source:    validation.IsURLWithHTTPorHTTPS(...) - no translation rule yet, add one
-  # path: gallery_application.order
-  #   source:    validation.IntBetween(0, math.MaxInt32) - bound(s) not a literal int (e.g. a named constant like math.MaxInt32) - resolve manually
-  # path: gallery_application.tag
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: identity.type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: identity.identity_ids[*]
-  #   source:    [from commonids.ValidateUserAssignedIdentityID] !ok
-  # path: identity.identity_ids[*]
-  #   source:    [from commonids.ValidateUserAssignedIdentityID] err != nil
-  # path: license_type
-  #   condition: contains(["RHEL_BYOS", "RHEL_BASE", "RHEL_EUS", "RHEL_SAPAPPS", "RHEL_SAPHA", "RHEL_BASESAPAPPS", "RHEL_BASESAPHA", "SLES_BYOS", "SLES_SAP", "SLES_HPC", "UBUNTU_PRO"], value)
-  #   message:   must be one of: RHEL_BYOS, RHEL_BASE, RHEL_EUS, RHEL_SAPAPPS, RHEL_SAPHA, RHEL_BASESAPAPPS, RHEL_BASESAPHA, SLES_BYOS, SLES_SAP, SLES_HPC, UBUNTU_PRO
-  # path: max_bid_price
-  #   source:    validation.FloatAtLeast(...) - no translation rule yet, add one
-  # path: priority
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: patch_mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: patch_assessment_mode
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: proximity_placement_group_id
-  #   source:    [from proximityplacementgroups.ValidateProximityPlacementGroupID] !ok
-  # path: proximity_placement_group_id
-  #   source:    [from proximityplacementgroups.ValidateProximityPlacementGroupID] err != nil
-  # path: reboot_setting
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: source_image_id
-  #   source:    validation.Any(...) - no translation rule yet, add one
-  # path: source_image_reference.publisher
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: source_image_reference.offer
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: source_image_reference.sku
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: source_image_reference.version
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: virtual_machine_scale_set_id
-  #   source:    [from commonids.ValidateVirtualMachineScaleSetID] !ok
-  # path: virtual_machine_scale_set_id
-  #   source:    [from commonids.ValidateVirtualMachineScaleSetID] err != nil
-  # path: platform_fault_domain
-  #   condition: value >= -1
-  #   message:   must be at least -1
-  # path: tags
-  #   condition: length(value) <= 50
-  #   message:   [from tags.Validate: invalid when len(value) > 50]
-  #   source:    [from tags.Validate: invalid when len(value) > 50]
-  # path: tags
-  #   condition: length(value) <= 512
-  #   message:   [from tags.Validate: invalid when len(value) > 512]
-  #   source:    [from tags.Validate: invalid when len(value) > 512]
-  # path: tags
-  #   source:    [from tags.Validate] err != nil
-  # path: tags
-  #   condition: length(value) <= 256
-  #   message:   [from tags.Validate: invalid when len(value) > 256]
-  #   source:    [from tags.Validate: invalid when len(value) > 256]
-  # path: os_image_notification.timeout
-  #   condition: contains(["PT15M"], value)
-  #   message:   must be one of: PT15M
-  # path: termination_notification.timeout
-  #   source:    azValidate.ISO8601DurationBetween: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: user_data
-  #   source:    validation.StringIsBase64(...) - no translation rule yet, add one
-  # path: zone
-  #   condition: length(value) > 0
-  #   message:   must not be empty
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        length(v.resource_group_name) <= 90
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) > 90]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        !endswith(v.resource_group_name, ".")
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: must not end with \".\"]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        length(v.resource_group_name) != 0
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) == 0]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.admin_username == null || (length(v.admin_username) <= 64)
+      )
+    ])
+    error_message = "[from computeValidate.LinuxAdminUsername: invalid when len(value) > 64]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.os_disk.disk_size_gb == null || (v.os_disk.disk_size_gb >= 0 && v.os_disk.disk_size_gb <= 4095)
+      )
+    ])
+    error_message = "must be between 0 and 4095"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        length(v.size) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.admin_ssh_key == null || alltrue([for item in v.admin_ssh_key : (length(item.username) > 0)])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.custom_data == null || (can(base64decode(v.custom_data)))
+      )
+    ])
+    error_message = "must be valid base64"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.edge_zone == null || (length(v.edge_zone) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.gallery_application == null || alltrue([for item in v.gallery_application : (item.tag == null || (length(item.tag) > 0))])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.license_type == null || (contains(["RHEL_BYOS", "RHEL_BASE", "RHEL_EUS", "RHEL_SAPAPPS", "RHEL_SAPHA", "RHEL_BASESAPAPPS", "RHEL_BASESAPHA", "SLES_BYOS", "SLES_SAP", "SLES_HPC", "UBUNTU_PRO"], v.license_type))
+      )
+    ])
+    error_message = "must be one of: RHEL_BYOS, RHEL_BASE, RHEL_EUS, RHEL_SAPAPPS, RHEL_SAPHA, RHEL_BASESAPAPPS, RHEL_BASESAPHA, SLES_BYOS, SLES_SAP, SLES_HPC, UBUNTU_PRO"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.max_bid_price == null || (v.max_bid_price >= -1.0)
+      )
+    ])
+    error_message = "must be at least -1.0"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.source_image_reference == null || (length(v.source_image_reference.publisher) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.source_image_reference == null || (length(v.source_image_reference.offer) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.source_image_reference == null || (length(v.source_image_reference.sku) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.source_image_reference == null || (length(v.source_image_reference.version) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.platform_fault_domain == null || (v.platform_fault_domain >= -1)
+      )
+    ])
+    error_message = "must be at least -1"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.tags == null || (length(v.tags) <= 50)
+      )
+    ])
+    error_message = "[from tags.Validate: invalid when len(value) > 50]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.os_image_notification == null || (v.os_image_notification.timeout == null || (contains(["PT15M"], v.os_image_notification.timeout)))
+      )
+    ])
+    error_message = "must be one of: PT15M"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.user_data == null || (can(base64decode(v.user_data)))
+      )
+    ])
+    error_message = "must be valid base64"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.linux_virtual_machines : (
+        v.zone == null || (length(v.zone) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # Note: 63 additional provider-side validators are enforced at apply time but not mirrored as validation{} blocks here (bespoke or non-mechanically-translatable).
 }
 
