@@ -105,12 +105,12 @@ EOT
     os_managed_disk_id                                     = optional(string)
     patch_assessment_mode                                  = optional(string)
     patch_mode                                             = optional(string)
-    platform_fault_domain                                  = optional(number) # Default: -1
-    priority                                               = optional(string) # Default: "Regular"
+    platform_fault_domain                                  = optional(number)
+    priority                                               = optional(string)
     provision_vm_agent                                     = optional(bool)
     proximity_placement_group_id                           = optional(string)
     secure_boot_enabled                                    = optional(bool)
-    max_bid_price                                          = optional(number) # Default: -1
+    max_bid_price                                          = optional(number)
     source_image_id                                        = optional(string)
     tags                                                   = optional(map(string))
     user_data                                              = optional(string)
@@ -126,9 +126,9 @@ EOT
     admin_username                                         = optional(string)
     allow_extension_operations                             = optional(bool)
     availability_set_id                                    = optional(string)
-    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool) # Default: false
+    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool)
     capacity_reservation_group_id                          = optional(string)
-    extensions_time_budget                                 = optional(string) # Default: "PT1H30M"
+    extensions_time_budget                                 = optional(string)
     computer_name                                          = optional(string)
     dedicated_host_group_id                                = optional(string)
     dedicated_host_id                                      = optional(string)
@@ -144,7 +144,7 @@ EOT
       caching = string
       diff_disk_settings = optional(object({
         option    = string
-        placement = optional(string) # Default: "CacheDisk"
+        placement = optional(string)
       }))
       disk_encryption_set_id           = optional(string)
       disk_size_gb                     = optional(number)
@@ -152,11 +152,11 @@ EOT
       secure_vm_disk_encryption_set_id = optional(string)
       security_encryption_type         = optional(string)
       storage_account_type             = optional(string)
-      write_accelerator_enabled        = optional(bool) # Default: false
+      write_accelerator_enabled        = optional(bool)
     })
     additional_capabilities = optional(object({
-      hibernation_enabled = optional(bool) # Default: false
-      ultra_ssd_enabled   = optional(bool) # Default: false
+      hibernation_enabled = optional(bool)
+      ultra_ssd_enabled   = optional(bool)
     }))
     admin_ssh_key = optional(list(object({
       public_key = string
@@ -166,11 +166,11 @@ EOT
       storage_account_uri = optional(string)
     }))
     gallery_application = optional(list(object({
-      automatic_upgrade_enabled                   = optional(bool) # Default: false
+      automatic_upgrade_enabled                   = optional(bool)
       configuration_blob_uri                      = optional(string)
-      order                                       = optional(number) # Default: 0
+      order                                       = optional(number)
       tag                                         = optional(string)
-      treat_failure_as_deployment_failure_enabled = optional(bool) # Default: false
+      treat_failure_as_deployment_failure_enabled = optional(bool)
       version_id                                  = string
     })))
     identity = optional(object({
@@ -178,7 +178,7 @@ EOT
       type         = string
     }))
     os_image_notification = optional(object({
-      timeout = optional(string) # Default: "PT15M"
+      timeout = optional(string)
     }))
     plan = optional(object({
       name      = string
@@ -199,7 +199,7 @@ EOT
     }))
     termination_notification = optional(object({
       enabled = bool
-      timeout = optional(string) # Default: "PT5M"
+      timeout = optional(string)
     }))
   }))
   validation {
@@ -270,6 +270,27 @@ EOT
   #   source:    [from commonids.ValidateNetworkInterfaceID] !ok
   # path: network_interface_ids[*]
   #   source:    [from commonids.ValidateNetworkInterfaceID] err != nil
+  # path: os_disk.caching
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: os_disk.storage_account_type
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: os_disk.diff_disk_settings.option
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: os_disk.diff_disk_settings.placement
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: os_disk.disk_encryption_set_id
+  #   source:    [from validate.DiskEncryptionSetID] !ok
+  # path: os_disk.disk_encryption_set_id
+  #   source:    [from validate.DiskEncryptionSetID] err != nil
+  # path: os_disk.disk_size_gb
+  #   condition: value >= 0 && value <= 4095
+  #   message:   must be between 0 and 4095
+  # path: os_disk.secure_vm_disk_encryption_set_id
+  #   source:    [from validate.DiskEncryptionSetID] !ok
+  # path: os_disk.secure_vm_disk_encryption_set_id
+  #   source:    [from validate.DiskEncryptionSetID] err != nil
+  # path: os_disk.security_encryption_type
+  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
   # path: os_managed_disk_id
   #   source:    [from commonids.ValidateManagedDiskID] !ok
   # path: os_managed_disk_id
@@ -289,6 +310,11 @@ EOT
   #   source:    [from computeValidate.LinuxAdminPassword] value == v
   # path: admin_password
   #   source:    [from computeValidate.LinuxAdminPassword] conditions < 3
+  # path: admin_ssh_key.public_key
+  #   source:    validate.SSHKey: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
+  # path: admin_ssh_key.username
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: availability_set_id
   #   source:    [from commonids.ValidateAvailabilitySetID] !ok
   # path: availability_set_id
@@ -318,6 +344,17 @@ EOT
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
   # path: extensions_time_budget
   #   source:    azValidate.ISO8601DurationBetween: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
+  # path: gallery_application.version_id
+  #   source:    [from galleryapplicationversions.ValidateApplicationVersionID] !ok
+  # path: gallery_application.version_id
+  #   source:    [from galleryapplicationversions.ValidateApplicationVersionID] err != nil
+  # path: gallery_application.configuration_blob_uri
+  #   source:    validation.IsURLWithHTTPorHTTPS(...) - no translation rule yet, add one
+  # path: gallery_application.order
+  #   source:    validation.IntBetween(0, math.MaxInt32) - bound(s) not a literal int (e.g. a named constant like math.MaxInt32) - resolve manually
+  # path: gallery_application.tag
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: identity.type
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
   # path: identity.identity_ids[*]
@@ -343,6 +380,18 @@ EOT
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
   # path: source_image_id
   #   source:    validation.Any(...) - no translation rule yet, add one
+  # path: source_image_reference.publisher
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: source_image_reference.offer
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: source_image_reference.sku
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: source_image_reference.version
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: virtual_machine_scale_set_id
   #   source:    [from commonids.ValidateVirtualMachineScaleSetID] !ok
   # path: virtual_machine_scale_set_id
@@ -364,6 +413,11 @@ EOT
   #   condition: length(value) <= 256
   #   message:   [from tags.Validate: invalid when len(value) > 256]
   #   source:    [from tags.Validate: invalid when len(value) > 256]
+  # path: os_image_notification.timeout
+  #   condition: contains(["PT15M"], value)
+  #   message:   must be one of: PT15M
+  # path: termination_notification.timeout
+  #   source:    azValidate.ISO8601DurationBetween: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
   # path: user_data
   #   source:    validation.StringIsBase64(...) - no translation rule yet, add one
   # path: zone
