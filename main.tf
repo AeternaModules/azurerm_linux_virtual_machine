@@ -22,18 +22,17 @@ resource "azurerm_linux_virtual_machine" "linux_virtual_machines" {
   platform_fault_domain                                  = each.value.platform_fault_domain
   priority                                               = each.value.priority
   provision_vm_agent                                     = each.value.provision_vm_agent
-  proximity_placement_group_id                           = each.value.proximity_placement_group_id
   secure_boot_enabled                                    = each.value.secure_boot_enabled
+  reboot_setting                                         = each.value.reboot_setting
   max_bid_price                                          = each.value.max_bid_price
   source_image_id                                        = each.value.source_image_id
   tags                                                   = each.value.tags
   user_data                                              = each.value.user_data
   virtual_machine_scale_set_id                           = each.value.virtual_machine_scale_set_id
-  vm_agent_platform_updates_enabled                      = each.value.vm_agent_platform_updates_enabled
-  reboot_setting                                         = each.value.reboot_setting
+  proximity_placement_group_id                           = each.value.proximity_placement_group_id
   license_type                                           = each.value.license_type
+  encryption_at_host_enabled                             = each.value.encryption_at_host_enabled
   eviction_policy                                        = each.value.eviction_policy
-  vtpm_enabled                                           = each.value.vtpm_enabled
   admin_password                                         = each.value.admin_password != null ? each.value.admin_password : try(data.azurerm_key_vault_secret.admin_password[each.key].value, null)
   admin_username                                         = each.value.admin_username
   allow_extension_operations                             = each.value.allow_extension_operations
@@ -47,7 +46,7 @@ resource "azurerm_linux_virtual_machine" "linux_virtual_machines" {
   disable_password_authentication                        = each.value.disable_password_authentication
   disk_controller_type                                   = each.value.disk_controller_type
   edge_zone                                              = each.value.edge_zone
-  encryption_at_host_enabled                             = each.value.encryption_at_host_enabled
+  vtpm_enabled                                           = each.value.vtpm_enabled
   custom_data                                            = each.value.custom_data != null ? each.value.custom_data : try(data.azurerm_key_vault_secret.custom_data[each.key].value, null)
   zone                                                   = each.value.zone
 

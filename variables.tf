@@ -55,7 +55,6 @@ Optional:
     - tags
     - user_data
     - virtual_machine_scale_set_id
-    - vm_agent_platform_updates_enabled
     - vtpm_enabled
     - zone
     - additional_capabilities (block):
@@ -108,18 +107,17 @@ EOT
     platform_fault_domain                                  = optional(number)
     priority                                               = optional(string)
     provision_vm_agent                                     = optional(bool)
-    proximity_placement_group_id                           = optional(string)
     secure_boot_enabled                                    = optional(bool)
+    reboot_setting                                         = optional(string)
     max_bid_price                                          = optional(number)
     source_image_id                                        = optional(string)
     tags                                                   = optional(map(string))
     user_data                                              = optional(string)
     virtual_machine_scale_set_id                           = optional(string)
-    vm_agent_platform_updates_enabled                      = optional(bool)
-    reboot_setting                                         = optional(string)
+    proximity_placement_group_id                           = optional(string)
     license_type                                           = optional(string)
+    encryption_at_host_enabled                             = optional(bool)
     eviction_policy                                        = optional(string)
-    vtpm_enabled                                           = optional(bool)
     admin_password                                         = optional(string)
     admin_password_key_vault_id                            = optional(string)
     admin_password_key_vault_secret_name                   = optional(string)
@@ -135,7 +133,7 @@ EOT
     disable_password_authentication                        = optional(bool)
     disk_controller_type                                   = optional(string)
     edge_zone                                              = optional(string)
-    encryption_at_host_enabled                             = optional(bool)
+    vtpm_enabled                                           = optional(bool)
     custom_data                                            = optional(string)
     custom_data_key_vault_id                               = optional(string)
     custom_data_key_vault_secret_name                      = optional(string)
